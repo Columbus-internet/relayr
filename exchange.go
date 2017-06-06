@@ -86,13 +86,14 @@ func (e *Exchange) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		baseURL := extractHostFromURL(r)
 		lastIndex := strings.LastIndex(r.URL.Path, "/"+op)
 		route := r.URL.Path[:lastIndex]
+		log.Printf("route: %s", route)
 		e.writeClientScript(w, baseURL, route)
 	}
 }
 
 func extractHostFromURL(r *http.Request) string {
 	log.Printf("hostname: %s", r.Host)
-	return r.URL.Hostname()
+	return r.Host
 }
 
 func extractOperationFromURL(r *http.Request) string {
