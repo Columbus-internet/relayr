@@ -70,6 +70,7 @@ func NewExchange() *Exchange {
 }
 
 func (e *Exchange) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("path: %s\n", r.URL.Path)
 	op := extractOperationFromURL(r)
 
 	switch op {
