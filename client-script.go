@@ -14,8 +14,9 @@ var RelayRConnection = {};
 RelayRConnection = (function() {
 	var readyCalled = false;
 	var web, transport;
-	var route = '/~relayr';
 	var baseurl = '%v';
+	var route = '%v';
+	
 	transport = {
 		websocket: {
 			connect: function(c) {

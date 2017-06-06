@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -83,17 +84,21 @@ func (e *Exchange) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case opCallServer:
 		e.callServer(w, r)
 	default:
-		e.writeClientScript(w, e.baseURL)
+		baseURL := extractHostFromURL(r)
+		lastIndex := strings.LastIndex(r.URL.Path, "/"+op)
+		route := r.URL.Path[:lastIndex]
+		e.writeClientScript(w, baseURL, route)
 	}
 }
 
-func extractRouteFromURL(r *http.Request) string {
-	lastSlash := strings.LastIndex(r.URL.Path, "/")
-	return r.URL.Path[:lastSlash]
+func extractHostFromURL(r *http.Request) string {
+	log.Printf("hostname: %s", r.Host)
+	return r.URL.Hostname()
 }
 
 func extractOperationFromURL(r *http.Request) string {
 	lastSlash := strings.LastIndex(r.URL.Path, "/")
+	log.Printf("operation: %s", r.URL.Path[lastSlash+1:])
 	return r.URL.Path[lastSlash+1:]
 }
 
@@ -147,14 +152,14 @@ func (e *Exchange) addClient(t string) string {
 	return cID
 }
 
-func (e *Exchange) writeClientScript(w http.ResponseWriter, baseURL string) {
+func (e *Exchange) writeClientScript(w http.ResponseWriter, baseURL, route string) {
 	if len(clientScript) > 0 && cacheEnabled {
 		io.Copy(w, bytes.NewBuffer(clientScript))
 	} else {
 		resultBuff := bytes.Buffer{}
 		buff := bytes.Buffer{}
 
-		buff.WriteString(fmt.Sprintf(connectionClassScript, baseURL))
+		buff.WriteString(fmt.Sprintf(connectionClassScript, baseURL, route))
 
 		buff.WriteString(relayClassBegin)
 
