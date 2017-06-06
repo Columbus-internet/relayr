@@ -46,6 +46,7 @@ type Exchange struct {
 	relays     []Relay
 	groups     map[string][]*client
 	transports map[string]Transport
+	baseURL    string
 }
 
 type negotiation struct {
@@ -57,19 +58,19 @@ type negotiationResponse struct {
 }
 
 // NewExchange initializes and returns a new Exchange
-func NewExchange() *Exchange {
+func NewExchange(baseURL string) *Exchange {
 	e := &Exchange{}
 	e.groups = make(map[string][]*client)
 	e.transports = map[string]Transport{
 		"websocket": newWebSocketTransport(e),
 		"longpoll":  newLongPollTransport(e),
 	}
+	e.baseURL = baseURL
 
 	return e
 }
 
 func (e *Exchange) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	route := extractRouteFromURL(r)
 	op := extractOperationFromURL(r)
 
 	switch op {
@@ -82,7 +83,7 @@ func (e *Exchange) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case opCallServer:
 		e.callServer(w, r)
 	default:
-		e.writeClientScript(w, route)
+		e.writeClientScript(w, e.baseURL)
 	}
 }
 
@@ -146,14 +147,14 @@ func (e *Exchange) addClient(t string) string {
 	return cID
 }
 
-func (e *Exchange) writeClientScript(w http.ResponseWriter, route string) {
+func (e *Exchange) writeClientScript(w http.ResponseWriter, baseURL string) {
 	if len(clientScript) > 0 && cacheEnabled {
 		io.Copy(w, bytes.NewBuffer(clientScript))
 	} else {
 		resultBuff := bytes.Buffer{}
 		buff := bytes.Buffer{}
 
-		buff.WriteString(fmt.Sprintf(connectionClassScript, route))
+		buff.WriteString(fmt.Sprintf(connectionClassScript, baseURL))
 
 		buff.WriteString(relayClassBegin)
 
