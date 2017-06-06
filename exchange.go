@@ -47,7 +47,6 @@ type Exchange struct {
 	relays     []Relay
 	groups     map[string][]*client
 	transports map[string]Transport
-	baseURL    string
 }
 
 type negotiation struct {
@@ -59,14 +58,13 @@ type negotiationResponse struct {
 }
 
 // NewExchange initializes and returns a new Exchange
-func NewExchange(baseURL string) *Exchange {
+func NewExchange() *Exchange {
 	e := &Exchange{}
 	e.groups = make(map[string][]*client)
 	e.transports = map[string]Transport{
 		"websocket": newWebSocketTransport(e),
 		"longpoll":  newLongPollTransport(e),
 	}
-	e.baseURL = baseURL
 
 	return e
 }
