@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -81,15 +82,17 @@ func (e *Exchange) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case opCallServer:
 		e.callServer(w, r)
 	default:
-		baseURL := extractHostFromURL(r)
-		lastIndex := strings.LastIndex(r.URL.Path, "/"+op)
-		route := r.URL.Path[:lastIndex]
+		lastIndex := strings.LastIndex(r.URL.String(), "/"+op)
+		route := r.URL.String()[:lastIndex]
+		log.Printf("route: %s", route)
+		baseURL := extractHostFromURL(r) + route
+		log.Printf("baseURL: %s", route)
 		e.writeClientScript(w, baseURL, route)
 	}
 }
 
 func extractHostFromURL(r *http.Request) string {
-	return r.Host
+	return fmt.Sprintf("%s://%s", r.URL.Scheme, r.Host)
 }
 
 func extractOperationFromURL(r *http.Request) string {
