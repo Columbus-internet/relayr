@@ -110,6 +110,7 @@ func extractOperationFromURL(r *http.Request) string {
 func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
+		w.Write([]byte(err.Error()))
 		return
 	}
 	log.Printf("upgradeWebSocket\n")
