@@ -20,7 +20,7 @@ RelayRConnection = (function() {
 		websocket: {
 			connect: function(c) {
 				var s = this;
-				s.socket = new WebSocket("ws://" + routeWithoutScheme + "/ws?connectionId=" + transport.ConnectionId);
+				s.socket = new WebSocket("wss://" + routeWithoutScheme + "/ws?connectionId=" + transport.ConnectionId);
 				s.socket.onclose = function(evt) {
 					setTimeout(function() {
 						web.n(); // renegotiate
