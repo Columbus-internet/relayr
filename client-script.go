@@ -14,13 +14,13 @@ var RelayRConnection = {};
 RelayRConnection = (function() {
 	var readyCalled = false;
 	var web, transport;
-	var routeWithoutProto = '%v';
+	var routeWithoutScheme = '%v';
 	var route = '%v';
 	transport = {
 		websocket: {
 			connect: function(c) {
 				var s = this;
-				s.socket = new WebSocket("ws://" + routeWithoutProto + "/ws?connectionId=" + transport.ConnectionId);
+				s.socket = new WebSocket("ws://" + routeWithoutScheme + "/ws?connectionId=" + transport.ConnectionId);
 				s.socket.onclose = function(evt) {
 					setTimeout(function() {
 						web.n(); // renegotiate

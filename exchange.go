@@ -43,9 +43,11 @@ type longPollServerCall struct {
 // via Relays. Relays registered with the Exchange expose methods
 // that can be invoked by clients.
 type Exchange struct {
-	relays     []Relay
-	groups     map[string][]*client
-	transports map[string]Transport
+	relays               []Relay
+	groups               map[string][]*client
+	transports           map[string]Transport
+	mainURL              string
+	mainURLWithoutScheme string
 }
 
 type negotiation struct {
@@ -57,13 +59,16 @@ type negotiationResponse struct {
 }
 
 // NewExchange initializes and returns a new Exchange
-func NewExchange() *Exchange {
+func NewExchange(mainURL string) *Exchange {
 	e := &Exchange{}
 	e.groups = make(map[string][]*client)
 	e.transports = map[string]Transport{
 		"websocket": newWebSocketTransport(e),
 		"longpoll":  newLongPollTransport(e),
 	}
+	e.mainURL = mainURL
+	e.mainURLWithoutScheme = strings.Replace(e.mainURL, "https://", "", -1)
+	e.mainURLWithoutScheme = strings.Replace(e.mainURLWithoutScheme, "http://", "", -1)
 
 	return e
 }
@@ -85,6 +90,10 @@ func (e *Exchange) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		lastIndex := strings.LastIndex(u.String(), "/"+op)
 		route := u.String()[:lastIndex]
 		baseURL := strings.Replace(route, u.Scheme+"://", "", -1)
+		if u.Host == "" {
+			route = e.mainURL + route
+			baseURL = e.mainURLWithoutScheme + route
+		}
 		e.writeClientScript(w, baseURL, route)
 	}
 }
