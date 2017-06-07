@@ -154,8 +154,8 @@ func (e *Exchange) extractConnectionIDFromURL(r *http.Request) string {
 
 func (e *Exchange) addClient(t string) string {
 	cID := generateConnectionID()
-	c := &client{ConnectionID: cID, exchange: e, transport: e.transports[t]}
-	e.groups["Global"] = append(e.groups["Global"], c)
+	client := &client{ConnectionID: cID, exchange: e, transport: e.transports[t]}
+	e.groups["Global"] = append(e.groups["Global"], client)
 	return cID
 }
 
