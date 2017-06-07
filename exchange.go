@@ -130,6 +130,7 @@ func (e *Exchange) negotiateConnection(w http.ResponseWriter, r *http.Request) {
 	encoder := json.NewEncoder(w)
 
 	groupname := r.Header.Get("WS-UserIDGroupName")
+	log.Printf("WS-UserIDGroupName: %s", r.Header.Get(groupname))
 
 	encoder.Encode(negotiationResponse{ConnectionID: e.addClient(neg.T, groupname)})
 }
