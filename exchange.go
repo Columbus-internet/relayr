@@ -113,6 +113,7 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 		r.Header.Set("Connection", "upgrade")
 	} else {
 		log.Printf("Connection header: %s\n", r.Header.Get("Connection"))
+		r.Header.Set("Connection", "upgrade")
 	}
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
