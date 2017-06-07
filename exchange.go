@@ -162,6 +162,8 @@ func (e *Exchange) addClient(t string, groupName string) string {
 		log.Printf("group is not null: %s\n", groupName)
 		e.groups[groupName] = make([]*client, 0, 0)
 		e.groups[groupName] = append(e.groups[groupName], c)
+	} else {
+		log.Println("group is empty")
 	}
 	return cID
 }
