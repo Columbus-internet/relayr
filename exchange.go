@@ -286,8 +286,10 @@ func (e *Exchange) callClientMethod(r *Relay, fn string, args ...interface{}) {
 
 func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...interface{}) {
 	if _, ok := e.groups[group]; ok {
+		log.Println("group found")
 		for _, c := range e.groups[group] {
 			r := e.getRelayByName(relay.Name, c.ConnectionID)
+			log.Printf("sending to %s", c.ConnectionID)
 			c.transport.CallClientFunction(r, fn, args...)
 		}
 	}
