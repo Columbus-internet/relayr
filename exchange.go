@@ -288,7 +288,7 @@ func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...inter
 			c.transport.CallClientFunction(r, fn, args...)
 		}
 	} else {
-		log.Printf("group '%s' not found", group)
+		log.Printf("group '%s' not found. All groups: %v", group, e.groups)
 	}
 }
 
@@ -345,5 +345,6 @@ func (e *Exchange) addToGroup(group, connectionID string) {
 	if e.getClientIndexInGroup(group, connectionID) == -1 {
 		log.Printf("client %s added to '%s'\n", connectionID, group)
 		e.groups[group] = append(e.groups[group], e.getClientByConnectionID(connectionID))
+		log.Printf("list of clients for group %s: %v", group, e.groups[group])
 	}
 }
