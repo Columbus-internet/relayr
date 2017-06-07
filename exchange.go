@@ -110,7 +110,7 @@ func extractOperationFromURL(r *http.Request) string {
 func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Connection") == "" {
 		log.Println("no Connection header")
-		r.Header.Set("Connection", "upgrade")
+		r.Header.Add("Connection", "upgrade")
 	} else {
 		log.Printf("Connection header: %s\n", r.Header.Get("Connection"))
 		r.Header.Set("Connection", "upgrade")
@@ -118,7 +118,7 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	if r.Header.Get("Upgrade") == "" {
 		log.Println("no Upgrade header")
-		r.Header.Set("Upgrade", "websocket")
+		r.Header.Add("Upgrade", "websocket")
 	} else {
 		log.Printf("Upgrade header: %s\n", r.Header.Get("Upgrade"))
 		r.Header.Set("Upgrade", "websocket")
