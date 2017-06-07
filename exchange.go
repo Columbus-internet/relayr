@@ -341,6 +341,7 @@ func (e *Exchange) getClientIndexInGroup(g, id string) int {
 func (e *Exchange) addToGroup(group, connectionID string) {
 	// only add them if they aren't currently in the group
 	if e.getClientIndexInGroup(group, connectionID) == -1 {
+		log.Printf("client %s added to '%s'\n", connectionID, group)
 		e.groups[group] = append(e.groups[group], e.getClientByConnectionID(connectionID))
 	}
 }
