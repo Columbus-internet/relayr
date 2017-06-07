@@ -115,6 +115,14 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Connection header: %s\n", r.Header.Get("Connection"))
 		r.Header.Set("Connection", "upgrade")
 	}
+
+	if r.Header.Get("Upgrade") == "" {
+		log.Println("no Upgrade header")
+		r.Header.Set("Upgrade", "websocket")
+	} else {
+		log.Printf("Upgrade header: %s\n", r.Header.Get("Upgrade"))
+		r.Header.Set("Upgrade", "websocket")
+	}
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err.Error())
