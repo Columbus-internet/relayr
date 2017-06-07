@@ -156,10 +156,12 @@ func (e *Exchange) extractConnectionIDFromURL(r *http.Request) string {
 
 func (e *Exchange) addClient(t string, groupName string) string {
 	cID := generateConnectionID()
-	client := &client{ConnectionID: cID, exchange: e, transport: e.transports[t]}
-	e.groups["Global"] = append(e.groups["Global"], client)
+	c := &client{ConnectionID: cID, exchange: e, transport: e.transports[t]}
+	e.groups["Global"] = append(e.groups["Global"], c)
 	if groupName != "" {
-		e.groups[groupName] = append(e.groups[groupName], client)
+		log.Printf("group is not null: %s\n", groupName)
+		e.groups[groupName] = make([]*client, 0, 0)
+		e.groups[groupName] = append(e.groups[groupName], c)
 	}
 	return cID
 }
