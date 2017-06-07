@@ -33,7 +33,8 @@ RelayRConnection = (function() {
 
 				s.socket.onerror = function(evt) {
 					setTimeout(function() {
-						s.connect(cId, c);
+						//s.connect(cId, c);
+						s.connect(c);
 					});
 				};
 
