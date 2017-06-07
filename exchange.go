@@ -287,6 +287,8 @@ func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...inter
 			log.Printf("sending to %s", c.ConnectionID)
 			c.transport.CallClientFunction(r, fn, args...)
 		}
+	} else {
+		log.Printf("group '%s' not found", group)
 	}
 }
 
