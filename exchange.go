@@ -30,7 +30,13 @@ func DisableScriptCache() {
 	cacheEnabled = false
 }
 
-var upgrader = &websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
+var upgrader = &websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
 
 type longPollServerCall struct {
 	Server       bool          `json:"S"`
@@ -106,6 +112,7 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	log.Printf("upgradeWebSocket\n")
 	c := &connection{e: e, out: make(chan []byte, 256), ws: ws, c: e.transports["websocket"].(*webSocketTransport), id: r.URL.Query()["connectionId"][0]}
 	c.c.connected <- c
 	defer func() { c.c.disconnected <- c }()
