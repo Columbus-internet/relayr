@@ -129,10 +129,7 @@ func (e *Exchange) negotiateConnection(w http.ResponseWriter, r *http.Request) {
 
 	encoder := json.NewEncoder(w)
 
-	groupname := r.Header.Get("WS-UserIDGroupName")
-	log.Printf("WS-UserIDGroupName: %s", r.Header.Get(groupname))
-
-	encoder.Encode(negotiationResponse{ConnectionID: e.addClient(neg.T, groupname)})
+	encoder.Encode(negotiationResponse{ConnectionID: e.addClient(neg.T)})
 }
 
 func (e *Exchange) awaitLongPoll(w http.ResponseWriter, r *http.Request) {
@@ -155,17 +152,10 @@ func (e *Exchange) extractConnectionIDFromURL(r *http.Request) string {
 	return r.URL.Query()["connectionId"][0]
 }
 
-func (e *Exchange) addClient(t string, groupName string) string {
+func (e *Exchange) addClient(t string) string {
 	cID := generateConnectionID()
 	c := &client{ConnectionID: cID, exchange: e, transport: e.transports[t]}
 	e.groups["Global"] = append(e.groups["Global"], c)
-	if groupName != "" {
-		log.Printf("group is not null: %s\n", groupName)
-		e.groups[groupName] = make([]*client, 0, 0)
-		e.groups[groupName] = append(e.groups[groupName], c)
-	} else {
-		log.Println("group is empty")
-	}
 	return cID
 }
 
