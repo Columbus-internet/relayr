@@ -97,7 +97,6 @@ func (e *Exchange) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		lastIndex := strings.LastIndex(u.Path, "/"+op)
 		route := e.mainURL + u.Path[:lastIndex]
 		baseURL := e.mainURLWithoutScheme + u.Path[:lastIndex]
-		log.Printf("route: %s\nbaseURL: %s\nu: %#v\n", route, baseURL, u)
 		e.writeClientScript(w, baseURL, route)
 	}
 }
@@ -108,27 +107,11 @@ func extractOperationFromURL(r *http.Request) string {
 }
 
 func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Connection") == "" {
-		log.Println("no Connection header")
-		r.Header.Add("Connection", "upgrade")
-	} else {
-		log.Printf("Connection header: %s\n", r.Header.Get("Connection"))
-		r.Header.Set("Connection", "upgrade")
-	}
-
-	if r.Header.Get("Upgrade") == "" {
-		log.Println("no Upgrade header")
-		r.Header.Add("Upgrade", "websocket")
-	} else {
-		log.Printf("Upgrade header: %s\n", r.Header.Get("Upgrade"))
-		r.Header.Set("Upgrade", "websocket")
-	}
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	log.Printf("upgradeWebSocket\n")
 	c := &connection{e: e, out: make(chan []byte, 256), ws: ws, c: e.transports["websocket"].(*webSocketTransport), id: r.URL.Query()["connectionId"][0]}
 	c.c.connected <- c
 	defer func() { c.c.disconnected <- c }()
