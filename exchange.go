@@ -128,7 +128,10 @@ func (e *Exchange) negotiateConnection(w http.ResponseWriter, r *http.Request) {
 	decoder.Decode(&neg)
 
 	encoder := json.NewEncoder(w)
-	encoder.Encode(negotiationResponse{ConnectionID: e.addClient(neg.T)})
+
+	groupname := r.Header.Get("WS-UserIDGroupName")
+
+	encoder.Encode(negotiationResponse{ConnectionID: e.addClient(neg.T, groupname)})
 }
 
 func (e *Exchange) awaitLongPoll(w http.ResponseWriter, r *http.Request) {
@@ -151,9 +154,13 @@ func (e *Exchange) extractConnectionIDFromURL(r *http.Request) string {
 	return r.URL.Query()["connectionId"][0]
 }
 
-func (e *Exchange) addClient(t string) string {
+func (e *Exchange) addClient(t string, groupName string) string {
 	cID := generateConnectionID()
-	e.groups["Global"] = append(e.groups["Global"], &client{ConnectionID: cID, exchange: e, transport: e.transports[t]})
+	client := &client{ConnectionID: cID, exchange: e, transport: e.transports[t]}
+	e.groups["Global"] = append(e.groups["Global"], client)
+	if groupName != "" {
+		e.groups[groupName] = append(e.groups[groupName], client)
+	}
 	return cID
 }
 
