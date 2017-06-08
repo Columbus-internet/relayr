@@ -316,12 +316,15 @@ func (e *Exchange) getClientByConnectionID(cID string) *client {
 }
 
 func (e *Exchange) removeFromAllGroups(id string) {
+	log.Printf("removing client %s from all groups\n", id)
 	for group := range e.groups {
 		e.removeFromGroupByID(group, id)
 	}
 }
 
 func (e *Exchange) removeFromGroupByID(g, id string) {
+	log.Printf("removing client %s from '%s'\n", id, g)
+
 	if i := e.getClientIndexInGroup(g, id); i > -1 {
 		group := e.groups[g]
 		group[i] = nil
@@ -331,6 +334,9 @@ func (e *Exchange) removeFromGroupByID(g, id string) {
 		if len(e.groups[g]) == 0 {
 			delete(e.groups, g)
 		}
+		log.Println("client removed")
+	} else {
+		log.Printf("client %s not in the group '%s'", id, g)
 	}
 }
 
