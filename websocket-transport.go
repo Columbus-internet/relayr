@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 
+	"strings"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -85,8 +87,13 @@ func (c *connection) read() {
 	for {
 		_, message, err := c.ws.ReadMessage()
 		if err != nil {
+			log.Printf("c.id: %s\n", c.id)
 			log.Printf("error in c.read: %s\n", err)
-			break
+			if strings.Contains(err.Error(), "1006") {
+				continue
+			} else {
+				break
+			}
 		}
 		var m webSocketClientMessage
 		err = json.Unmarshal(message, &m)
