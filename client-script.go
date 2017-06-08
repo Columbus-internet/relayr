@@ -191,7 +191,7 @@ RelayRConnection = (function() {
 							for (var i = 0; i < cobj.A.length; i++) {
 								args.push(cobj.A[i]);
 							}
-							lobj[cobj.M].apply(lobj||window, args);
+							lobj[cobj.M] && lobj[cobj.M].apply(lobj||window, args);
 						});
 					}, 0);
 				}, "json",
