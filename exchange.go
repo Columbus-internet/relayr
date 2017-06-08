@@ -281,7 +281,11 @@ func (e *Exchange) callClientMethod(r *Relay, fn string, args ...interface{}) {
 
 func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...interface{}) {
 	if _, ok := e.groups[group]; ok {
-		log.Println("group found, clients in group: %v", e.groups[group])
+		log.Println("group found")
+		log.Printf("list of clients for group when calling %s:\n", group)
+		for _, c := range e.groups[group] {
+			log.Printf("ConnectionID: %s\n", c.ConnectionID)
+		}
 		for _, c := range e.groups[group] {
 			r := e.getRelayByName(relay.Name, c.ConnectionID)
 			log.Printf("sending to %s", c.ConnectionID)
@@ -345,6 +349,15 @@ func (e *Exchange) addToGroup(group, connectionID string) {
 	if e.getClientIndexInGroup(group, connectionID) == -1 {
 		log.Printf("client %s added to '%s'\n", connectionID, group)
 		e.groups[group] = append(e.groups[group], e.getClientByConnectionID(connectionID))
-		log.Printf("list of clients for group %s: %v", group, e.groups[group])
+		log.Printf("list of clients for group %s:\n", group)
+		for _, c := range e.groups[group] {
+			log.Printf("ConnectionID: %s\n", c.ConnectionID)
+		}
+	} else {
+		log.Printf("client %s NOT added to '%s'\n", connectionID, group)
+		log.Printf("list of clients for group %s:\n", group)
+		for _, c := range e.groups[group] {
+			log.Printf("ConnectionID: %s\n", c.ConnectionID)
+		}
 	}
 }
