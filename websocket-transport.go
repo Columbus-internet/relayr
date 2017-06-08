@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/gorilla/websocket"
 )
@@ -84,6 +85,7 @@ func (c *connection) read() {
 	for {
 		_, message, err := c.ws.ReadMessage()
 		if err != nil {
+			log.Printf("error in c.read: %s\n", err)
 			break
 		}
 		var m webSocketClientMessage
