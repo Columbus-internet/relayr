@@ -9,9 +9,8 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
-	"time"
 
-	"github.com/gorilla/websocket"
+	"github.com/Columbus-internet/websocket"
 )
 
 // ClientScriptFunc is a callback for altering the client side
@@ -114,13 +113,6 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	c := &connection{e: e, out: make(chan []byte, 10*1024), ws: ws, c: e.transports["websocket"].(*webSocketTransport), id: r.URL.Query()["connectionId"][0]}
-	pongWait := time.Minute * 10
-	c.ws.SetReadLimit(10 * 1024)
-	c.ws.SetReadDeadline(time.Now().Add(pongWait))
-	c.ws.SetPongHandler(func(string) error {
-		c.ws.SetReadDeadline(time.Now().Add(pongWait))
-		return nil
-	})
 
 	c.c.connected <- c
 	defer func() { c.c.disconnected <- c }()

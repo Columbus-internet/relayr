@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gorilla/websocket"
+	"github.com/Columbus-internet/websocket"
 )
 
 type connection struct {
