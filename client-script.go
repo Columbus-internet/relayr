@@ -32,6 +32,7 @@ RelayRConnection = (function() {
 				};
 
 				s.socket.onerror = function(evt) {
+					console.log('RelayR error on' + new Date().getTime(), evt)
 					setTimeout(function() {
 						//s.connect(cId, c);
 						s.connect(c);
