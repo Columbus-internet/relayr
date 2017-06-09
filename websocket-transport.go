@@ -89,7 +89,7 @@ func (c *connection) read() {
 		if err != nil {
 			log.Printf("c.id: %s\n", c.id)
 			log.Printf("error in c.read: %s\n", err)
-			if strings.Contains(err, "1006") {
+			if strings.Contains(err.Error(), "1006") {
 				log.Println("ignoring the 1006")
 				continue
 			}
