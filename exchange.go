@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Columbus-internet/websocket"
+	"github.com/gorilla/websocket"
 )
 
 // ClientScriptFunc is a callback for altering the client side

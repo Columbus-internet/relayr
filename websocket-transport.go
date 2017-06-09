@@ -8,7 +8,7 @@ import (
 
 	"time"
 
-	"github.com/Columbus-internet/websocket"
+	"github.com/gorilla/websocket"
 )
 
 type connection struct {
