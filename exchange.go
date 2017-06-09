@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -112,7 +113,15 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 		log.Println(err.Error())
 		return
 	}
-	c := &connection{e: e, out: make(chan []byte, 256), ws: ws, c: e.transports["websocket"].(*webSocketTransport), id: r.URL.Query()["connectionId"][0]}
+	c := &connection{e: e, out: make(chan []byte, 10*1024), ws: ws, c: e.transports["websocket"].(*webSocketTransport), id: r.URL.Query()["connectionId"][0]}
+	pongWait := time.Minute * 10
+	c.ws.SetReadLimit(10 * 1024)
+	c.ws.SetReadDeadline(time.Now().Add(pongWait))
+	c.ws.SetPongHandler(func(string) error {
+		c.ws.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
+
 	c.c.connected <- c
 	defer func() { c.c.disconnected <- c }()
 	go c.write()
