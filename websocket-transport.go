@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"strings"
+	"time"
 
 	"github.com/Columbus-internet/websocket"
 )
@@ -84,16 +84,11 @@ func (c *webSocketTransport) CallClientFunction(relay *Relay, fn string, args ..
 }
 
 func (c *connection) read() {
+	var t = time.Now()
 	for {
 		_, message, err := c.ws.ReadMessage()
 		if err != nil {
-			log.Printf("c.id: %s\n", c.id)
-			log.Printf("error in c.read: %s\n", err)
-			if strings.Contains(err.Error(), "1006") {
-				log.Println("ignoring the 1006")
-				continue
-			}
-			log.Println("not ignored")
+			log.Printf("connection %s live time: %f", c.id, time.Now().Sub(t).Seconds())
 			break
 		}
 		var m webSocketClientMessage
