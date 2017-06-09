@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 
+	"strings"
+
 	"github.com/Columbus-internet/websocket"
 )
 
@@ -87,7 +89,11 @@ func (c *connection) read() {
 		if err != nil {
 			log.Printf("c.id: %s\n", c.id)
 			log.Printf("error in c.read: %s\n", err)
-
+			if strings.Contains(err, "1006") {
+				log.Println("ignoring the 1006")
+				continue
+			}
+			log.Println("not ignored")
 			break
 		}
 		var m webSocketClientMessage
