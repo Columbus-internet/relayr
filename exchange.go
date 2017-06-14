@@ -118,7 +118,7 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 	c.c.connected <- c
 	defer func() { c.c.disconnected <- c }()
 	go c.write()
-	keepAlive(c.ws, 30*time.Second)
+	keepAlive(c.ws, 40*time.Second)
 	c.read()
 }
 
