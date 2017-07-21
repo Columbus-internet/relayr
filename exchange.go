@@ -313,18 +313,18 @@ func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...inter
 	e.mapLock.Lock()
 	defer e.mapLock.Unlock()
 	if _, ok := e.groups[group]; ok {
-		log.Println("group found")
-		log.Printf("list of clients for group when calling %s:\n", group)
-		for _, c := range e.groups[group] {
-			log.Printf("ConnectionID: %s\n", c.ConnectionID)
-		}
+		// log.Println("group found")
+		// log.Printf("list of clients for group when calling %s:\n", group)
+		// for _, c := range e.groups[group] {
+		// 	log.Printf("ConnectionID: %s\n", c.ConnectionID)
+		// }
 		for _, c := range e.groups[group] {
 			r := e.getRelayByName(relay.Name, c.ConnectionID)
-			log.Printf("sending to %s", c.ConnectionID)
+			//log.Printf("sending to %s", c.ConnectionID)
 			c.transport.CallClientFunction(r, fn, args...)
 		}
 	} else {
-		log.Printf("group '%s' not found. All groups: %v", group, e.groups)
+		//log.Printf("group '%s' not found. All groups: %v", group, e.groups)
 	}
 }
 
