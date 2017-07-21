@@ -350,7 +350,7 @@ func (e *Exchange) getClientByConnectionID(cID string) *client {
 }
 
 func (e *Exchange) removeFromAllGroups(id string) {
-	log.Printf("removing client %s from all groups\n", id)
+	//log.Printf("removing client %s from all groups\n", id)
 	for group := range e.groups {
 		e.removeFromGroupByID(group, id)
 	}
@@ -370,9 +370,9 @@ func (e *Exchange) removeFromGroupByID(g, id string) {
 		if len(e.groups[g]) == 0 {
 			delete(e.groups, g)
 		}
-		log.Println("client removed")
+		//log.Println("client removed")
 	} else {
-		log.Printf("client %s not in the group '%s'", id, g)
+		// log.Printf("client %s not in the group '%s'", id, g)
 	}
 }
 
@@ -393,17 +393,17 @@ func (e *Exchange) addToGroup(group, connectionID string) {
 	// e.mapLock.Lock()
 	// defer e.mapLock.Unlock()
 	if e.getClientIndexInGroup(group, connectionID) == -1 {
-		log.Printf("client %s added to '%s'\n", connectionID, group)
+		//log.Printf("client %s added to '%s'\n", connectionID, group)
 		e.groups[group] = append(e.groups[group], e.getClientByConnectionID(connectionID))
-		log.Printf("list of clients for group %s:\n", group)
-		for _, c := range e.groups[group] {
-			log.Printf("ConnectionID: %s\n", c.ConnectionID)
-		}
+		//log.Printf("list of clients for group %s:\n", group)
+		// for _, c := range e.groups[group] {
+		// 	log.Printf("ConnectionID: %s\n", c.ConnectionID)
+		// }
 	} else {
-		log.Printf("client %s NOT added to '%s'\n", connectionID, group)
-		log.Printf("list of clients for group %s:\n", group)
-		for _, c := range e.groups[group] {
-			log.Printf("ConnectionID: %s\n", c.ConnectionID)
-		}
+		// log.Printf("client %s NOT added to '%s'\n", connectionID, group)
+		// log.Printf("list of clients for group %s:\n", group)
+		// for _, c := range e.groups[group] {
+		// 	log.Printf("ConnectionID: %s\n", c.ConnectionID)
+		// }
 	}
 }
