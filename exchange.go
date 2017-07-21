@@ -184,8 +184,8 @@ func (e *Exchange) addClient(t string) string {
 	cID := generateConnectionID()
 	client := &client{ConnectionID: cID, exchange: e, transport: e.transports[t]}
 	e.mapLock.Lock()
-	defer e.mapLock.Unlock()
 	e.groups["Global"] = append(e.groups["Global"], client)
+	e.mapLock.Unlock()
 	return cID
 }
 
