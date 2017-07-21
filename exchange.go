@@ -58,7 +58,7 @@ type Exchange struct {
 	transports           map[string]Transport
 	mainURL              string
 	mainURLWithoutScheme string
-	mapLock              sync.RWMutex
+	mapLock              sync.Mutex
 }
 
 type negotiation struct {
@@ -310,8 +310,8 @@ func (e *Exchange) callClientMethod(r *Relay, fn string, args ...interface{}) {
 }
 
 func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...interface{}) {
-	e.mapLock.RLock()
-	defer e.mapLock.RUnlock()
+	e.mapLock.Lock()
+	defer e.mapLock.Unlock()
 	if _, ok := e.groups[group]; ok {
 		log.Println("group found")
 		log.Printf("list of clients for group when calling %s:\n", group)
@@ -329,8 +329,8 @@ func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...inter
 }
 
 func (e *Exchange) callGroupMethodExcept(relay *Relay, group, fn string, args ...interface{}) {
-	e.mapLock.RLock()
-	defer e.mapLock.RUnlock()
+	e.mapLock.Lock()
+	defer e.mapLock.Unlock()
 	for _, c := range e.groups[group] {
 		if c.ConnectionID == relay.ConnectionID {
 			continue
@@ -341,8 +341,8 @@ func (e *Exchange) callGroupMethodExcept(relay *Relay, group, fn string, args ..
 }
 
 func (e *Exchange) getClientByConnectionID(cID string) *client {
-	e.mapLock.RLock()
-	defer e.mapLock.RUnlock()
+	e.mapLock.Lock()
+	defer e.mapLock.Unlock()
 	for _, c := range e.groups["Global"] {
 		if c.ConnectionID == cID {
 			return c
@@ -379,8 +379,8 @@ func (e *Exchange) removeFromGroupByID(g, id string) {
 }
 
 func (e *Exchange) getClientIndexInGroup(g, id string) int {
-	e.mapLock.RLock()
-	defer e.mapLock.RUnlock()
+	e.mapLock.Lock()
+	defer e.mapLock.Unlock()
 	for i, c := range e.groups[g] {
 		if c.ConnectionID == id {
 			return i
