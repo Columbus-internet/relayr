@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -56,7 +57,7 @@ type Exchange struct {
 	transports           map[string]Transport
 	mainURL              string
 	mainURLWithoutScheme string
-	//mapLock              sync.Mutex
+	mapLock              sync.Mutex
 }
 
 type negotiation struct {
@@ -155,7 +156,9 @@ func (e *Exchange) negotiateConnection(w http.ResponseWriter, r *http.Request) {
 
 	encoder := json.NewEncoder(w)
 
+	e.mapLock.Lock()
 	encoder.Encode(negotiationResponse{ConnectionID: e.addClient(neg.T)})
+	e.mapLock.Unlock()
 }
 
 func (e *Exchange) awaitLongPoll(w http.ResponseWriter, r *http.Request) {
