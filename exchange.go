@@ -11,8 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"sync"
-
 	"github.com/gorilla/websocket"
 )
 
@@ -58,7 +56,7 @@ type Exchange struct {
 	transports           map[string]Transport
 	mainURL              string
 	mainURLWithoutScheme string
-	mapLock              sync.Mutex
+	//mapLock              sync.Mutex
 }
 
 type negotiation struct {
@@ -183,9 +181,9 @@ func (e *Exchange) extractConnectionIDFromURL(r *http.Request) string {
 func (e *Exchange) addClient(t string) string {
 	cID := generateConnectionID()
 	client := &client{ConnectionID: cID, exchange: e, transport: e.transports[t]}
-	e.mapLock.Lock()
+	// e.mapLock.Lock()
 	e.groups["Global"] = append(e.groups["Global"], client)
-	e.mapLock.Unlock()
+	// e.mapLock.Unlock()
 	return cID
 }
 
@@ -310,8 +308,8 @@ func (e *Exchange) callClientMethod(r *Relay, fn string, args ...interface{}) {
 }
 
 func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...interface{}) {
-	e.mapLock.Lock()
-	defer e.mapLock.Unlock()
+	// e.mapLock.Lock()
+	// defer e.mapLock.Unlock()
 	if _, ok := e.groups[group]; ok {
 		// log.Println("group found")
 		// log.Printf("list of clients for group when calling %s:\n", group)
@@ -329,8 +327,8 @@ func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...inter
 }
 
 func (e *Exchange) callGroupMethodExcept(relay *Relay, group, fn string, args ...interface{}) {
-	e.mapLock.Lock()
-	defer e.mapLock.Unlock()
+	// e.mapLock.Lock()
+	// defer e.mapLock.Unlock()
 	for _, c := range e.groups[group] {
 		if c.ConnectionID == relay.ConnectionID {
 			continue
@@ -341,8 +339,8 @@ func (e *Exchange) callGroupMethodExcept(relay *Relay, group, fn string, args ..
 }
 
 func (e *Exchange) getClientByConnectionID(cID string) *client {
-	e.mapLock.Lock()
-	defer e.mapLock.Unlock()
+	// e.mapLock.Lock()
+	// defer e.mapLock.Unlock()
 	for _, c := range e.groups["Global"] {
 		if c.ConnectionID == cID {
 			return c
@@ -360,8 +358,8 @@ func (e *Exchange) removeFromAllGroups(id string) {
 
 func (e *Exchange) removeFromGroupByID(g, id string) {
 	log.Printf("removing client %s from '%s'\n", id, g)
-	e.mapLock.Lock()
-	defer e.mapLock.Unlock()
+	// e.mapLock.Lock()
+	// defer e.mapLock.Unlock()
 
 	if i := e.getClientIndexInGroup(g, id); i > -1 {
 		group := e.groups[g]
@@ -379,8 +377,8 @@ func (e *Exchange) removeFromGroupByID(g, id string) {
 }
 
 func (e *Exchange) getClientIndexInGroup(g, id string) int {
-	e.mapLock.Lock()
-	defer e.mapLock.Unlock()
+	// e.mapLock.Lock()
+	// defer e.mapLock.Unlock()
 	for i, c := range e.groups[g] {
 		if c.ConnectionID == id {
 			return i
@@ -392,8 +390,8 @@ func (e *Exchange) getClientIndexInGroup(g, id string) int {
 
 func (e *Exchange) addToGroup(group, connectionID string) {
 	// only add them if they aren't currently in the group
-	e.mapLock.Lock()
-	defer e.mapLock.Unlock()
+	// e.mapLock.Lock()
+	// defer e.mapLock.Unlock()
 	if e.getClientIndexInGroup(group, connectionID) == -1 {
 		log.Printf("client %s added to '%s'\n", connectionID, group)
 		e.groups[group] = append(e.groups[group], e.getClientByConnectionID(connectionID))
