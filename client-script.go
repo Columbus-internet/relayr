@@ -18,11 +18,20 @@ RelayRConnection = (function() {
 	var route = '%v';
 	transport = {
 		websocket: {
+			waitForConnection: function (callback, interval) {
+				var s = this;
+				if (s.socket.readyState === 1) {
+					callback();
+				} else {
+					setTimeout(function () {
+						s.waitForConnection(callback, interval);
+					}, interval);
+				}
+			},
 			connect: function(c) {
 				var s = this;
 				s.socket = new WebSocket("wss://" + routeWithoutScheme + "/ws?connectionId=" + transport.ConnectionId);
 				s.socket.onclose = function(evt) {
-					//console.log('websocket closed connectionId: ' + transport.ConnectionId + " at " + new Date().getTime(), evt)
 					setTimeout(function() {
 						web.n(); // renegotiate
 					}, 2000);
@@ -33,24 +42,23 @@ RelayRConnection = (function() {
 				};
 
 				s.socket.onerror = function(evt) {
-					//console.log('RelayR error on' + new Date().getTime(), evt)
 					setTimeout(function() {
-						//s.connect(cId, c);
 						s.connect(c);
 					});
 				};
 
 				s.socket.onopen = function(evt) {
-					//console.log('websocket opened connectionId: ' + transport.ConnectionId + " at " + new Date().getTime(), evt)
 					if (!readyCalled) {
 						RelayRConnection.r();
 						readyCalled = true;
 					}
 				};
 			},
-			send: function(data) {
+			send: function (data) {
 				var s = this;
-				s.socket.send(data);
+				s.waitForConnection(function () {
+					s.socket.send(data);
+				}, 500);
 			}
 		},
 		longpoll: {
