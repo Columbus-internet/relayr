@@ -23,7 +23,7 @@ RelayRConnection = (function() {
 				if (s.socket.readyState === 1) {
 					callback();
 				} else {
-					console.log('c%>> websocket: connection is not ready, waiting ' + interval + 'ms', 'color:yellow');
+					console.log('%c-> websocket: connection is not ready, waiting ' + interval + 'ms', 'color:yellow');
 					setTimeout(function () {
 						s.waitForConnection(callback, interval);
 					}, interval);
@@ -33,7 +33,7 @@ RelayRConnection = (function() {
 				var s = this;
 				s.socket = new WebSocket("wss://" + routeWithoutScheme + "/ws?connectionId=" + transport.ConnectionId);
 				s.socket.onclose = function(evt) {
-					console.log('c%>> websocket: connection closed', 'color:yellow', transport.ConnectionId);
+					console.log('%c-> websocket: connection closed', 'color:yellow', transport.ConnectionId);
 					setTimeout(function() {
 						web.n(); // renegotiate
 					}, 2000);
@@ -44,7 +44,7 @@ RelayRConnection = (function() {
 				};
 
 				s.socket.onerror = function(evt) {
-					console.log('c%>> websocket: connection error', 'color:red', evt);
+					console.log('%c-> websocket: connection error', 'color:red', evt);
 					setTimeout(function() {
 						s.connect(c);
 					});
@@ -52,8 +52,8 @@ RelayRConnection = (function() {
 
 				s.socket.onopen = function(evt) {
 					readyCalled 
-						? console.log('c%>> websocket: connection opened c%(readyCalled == true)', 'color:green', 'color:red', evt)
-						: console.log('c%>> websocket: connection opened', 'color:green', evt);
+						? console.log('%c-> websocket: connection opened %c(readyCalled == true)', 'color:green', 'color:red', evt)
+						: console.log('%c-> websocket: connection opened', 'color:green', evt);
 					if (!readyCalled) {
 						RelayRConnection.r();
 						readyCalled = true;
@@ -213,7 +213,7 @@ RelayRConnection = (function() {
 					}, 0);
 				}, "json",
 				function(result) {
-					console.log('c%>> ~relayr: negotiate error', 'color:red', result);
+					console.log('%c-> ~relayr: negotiate error', 'color:red', result);
 					// error .. try again
 					setTimeout(function() {
 						s.n();
