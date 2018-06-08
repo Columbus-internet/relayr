@@ -33,7 +33,7 @@ RelayRConnection = (function() {
 				var s = this;
 				s.socket = new WebSocket("wss://" + routeWithoutScheme + "/ws?connectionId=" + transport.ConnectionId);
 				s.socket.onclose = function(evt) {
-					console.log('%c-> websocket: connection closed', 'color:yellow', transport.ConnectionId);
+					console.log('%c-> websocket: connection closed', 'color:orange', transport.ConnectionId);
 					setTimeout(function() {
 						web.n(); // renegotiate
 					}, 2000);
