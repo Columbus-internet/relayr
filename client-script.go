@@ -52,7 +52,7 @@ RelayRConnection = (function() {
 
 				s.socket.onopen = function(evt) {
 					readyCalled 
-						? console.log('c%>> websocket: connection opened c%(readyCalled == true)', 'color:green', 'color:red', evt);
+						? console.log('c%>> websocket: connection opened c%(readyCalled == true)', 'color:green', 'color:red', evt)
 						: console.log('c%>> websocket: connection opened', 'color:green', evt);
 					if (!readyCalled) {
 						RelayRConnection.r();
