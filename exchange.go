@@ -360,7 +360,7 @@ func (e *Exchange) removeFromAllGroups(id string) {
 }
 
 func (e *Exchange) removeFromGroupByID(g, id string) {
-	log.Printf("removing client %s from '%s'\n", id, g)
+	//log.Printf("removing client %s from '%s'\n", id, g)
 	// e.mapLock.Lock()
 	// defer e.mapLock.Unlock()
 
@@ -396,7 +396,6 @@ func (e *Exchange) addToGroup(group, connectionID string) {
 	// e.mapLock.Lock()
 	// defer e.mapLock.Unlock()
 	if e.getClientIndexInGroup(group, connectionID) == -1 {
-		//log.Printf("client %s added to '%s'\n", connectionID, group)
 		e.groups[group] = append(e.groups[group], e.getClientByConnectionID(connectionID))
 		//log.Printf("list of clients for group %s:\n", group)
 		// for _, c := range e.groups[group] {

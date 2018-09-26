@@ -4,9 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
-
-	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -84,11 +81,11 @@ func (c *webSocketTransport) CallClientFunction(relay *Relay, fn string, args ..
 }
 
 func (c *connection) read() {
-	var t = time.Now()
+	//var t = time.Now()
 	for {
 		_, message, err := c.ws.ReadMessage()
 		if err != nil {
-			log.Printf("connection %s live time: %f", c.id, time.Now().Sub(t).Seconds())
+			//log.Printf("connection %s live time: %f", c.id, time.Now().Sub(t).Seconds())
 			break
 		}
 		var m webSocketClientMessage
