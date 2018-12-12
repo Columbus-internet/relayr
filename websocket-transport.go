@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/gorilla/websocket"
 )
@@ -48,8 +49,10 @@ func (c *webSocketTransport) listen() {
 	for {
 		select {
 		case conn := <-c.connected:
+			log.Printf("connection added id: %s", conn.id)
 			c.connections[conn.id] = conn
 		case conn := <-c.disconnected:
+			log.Printf("removing connection id: %s", conn.id)
 			if _, ok := c.connections[conn.id]; ok {
 				c.e.removeFromAllGroups(conn.id)
 				delete(c.connections, conn.id)
@@ -88,6 +91,8 @@ func (c *connection) read() {
 			//log.Printf("connection %s live time: %f", c.id, time.Now().Sub(t).Seconds())
 			break
 		}
+		log.Printf("c.read of conn id %s got %s", c.id, string(message))
+
 		var m webSocketClientMessage
 		err = json.Unmarshal(message, &m)
 		if err != nil {
