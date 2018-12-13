@@ -127,33 +127,33 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	c.c.connected <- c
 
-	defer func() { c.c.disconnected <- c }()
+	//defer func() { c.c.disconnected <- c }()
 	log.Printf("running c.write goroutine, conn id: %s", c.id)
 	go c.write()
 	log.Printf("after c.write goroutine, conn id: %s", c.id)
-	keepAlive(c.ws, 40*time.Second)
+	keepAlive(c, 40*time.Second)
 
 	log.Printf("entering c.read, conn id: %s", c.id)
-	c.read()
+	go c.read()
 	log.Printf("left c.read, conn id: %s", c.id)
 }
 
-func keepAlive(c *websocket.Conn, timeout time.Duration) {
+func keepAlive(c *connection, timeout time.Duration) {
 	lastResponse := time.Now()
-	c.SetPongHandler(func(msg string) error {
+	c.ws.SetPongHandler(func(msg string) error {
 		lastResponse = time.Now()
 		return nil
 	})
 
 	go func() {
 		for {
-			err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+			err := c.ws.WriteMessage(websocket.PingMessage, []byte("keepalive"))
 			if err != nil {
 				return
 			}
 			time.Sleep(timeout / 2)
 			if time.Now().Sub(lastResponse) > timeout {
-				c.Close()
+				c.ws.Close()
 				return
 			}
 		}

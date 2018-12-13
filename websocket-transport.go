@@ -85,6 +85,7 @@ func (c *webSocketTransport) CallClientFunction(relay *Relay, fn string, args ..
 
 func (c *connection) read() {
 	//var t = time.Now()
+	defer func() { c.c.disconnected <- c }()
 	for {
 		_, message, err := c.ws.ReadMessage()
 		if err != nil {
@@ -113,6 +114,7 @@ func (c *connection) read() {
 			c.c.CallClientFunction(relay, m.Method, m.Arguments)
 		}
 	}
+
 	c.ws.Close()
 }
 
