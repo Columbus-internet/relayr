@@ -110,13 +110,12 @@ func extractOperationFromURL(r *http.Request) string {
 }
 
 func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
-	log.Printf("start socket upgrading id: %s", r.URL.Query()["connectionId"][0])
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	log.Printf("socket upgraded id: %s", r.URL.Query()["connectionId"][0])
+
 	c := &connection{
 		e:   e,
 		out: make(chan []byte, 10*1024),
@@ -128,14 +127,11 @@ func (e *Exchange) upgradeWebSocket(w http.ResponseWriter, r *http.Request) {
 	c.c.connected <- c
 
 	//defer func() { c.c.disconnected <- c }()
-	log.Printf("running c.write goroutine, conn id: %s", c.id)
 	go c.write()
-	log.Printf("after c.write goroutine, conn id: %s", c.id)
+
 	keepAlive(c, 40*time.Second)
 
-	log.Printf("entering c.read, conn id: %s", c.id)
 	go c.read()
-	log.Printf("left c.read, conn id: %s", c.id)
 }
 
 func keepAlive(c *connection, timeout time.Duration) {
