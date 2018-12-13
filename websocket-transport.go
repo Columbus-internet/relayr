@@ -88,6 +88,7 @@ func (c *connection) read() {
 	for {
 		_, message, err := c.ws.ReadMessage()
 		if err != nil {
+			log.Printf("c.read of conn id %s got %s", c.id, string(message))
 			log.Printf("connection id %s, c.ws.ReadMessage() error: %s", c.id, err)
 			//log.Printf("connection %s live time: %f", c.id, time.Now().Sub(t).Seconds())
 			break
