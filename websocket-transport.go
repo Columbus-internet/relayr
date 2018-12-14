@@ -84,9 +84,6 @@ func (c *webSocketTransport) CallClientFunction(relay *Relay, fn string, args ..
 }
 
 func (c *connection) read() {
-
-	defer func() { c.c.disconnected <- c }()
-
 	for {
 		_, message, err := c.ws.ReadMessage()
 		if err != nil {
