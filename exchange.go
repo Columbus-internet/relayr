@@ -245,7 +245,7 @@ func (e *Exchange) RegisterRelay(x interface{}) {
 
 	methods := e.getMethodsForType(t)
 
-	e.relays = append(e.relays, Relay{Name: t.Name(), t: t, methods: methods, exchange: e})
+	e.relays = append(e.relays, Relay{Name: t.Name(), UnderlyingStruct: x, t: t, methods: methods, exchange: e})
 }
 
 func (e *Exchange) getMethodsForType(t reflect.Type) []string {

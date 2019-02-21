@@ -6,9 +6,10 @@ import "reflect"
 // during an interaction with the server. It provides methods
 // for interacting with clients and groups.
 type Relay struct {
-	Name         string            // The name of the relay it is associated with
-	ConnectionID string            // The connectionID of the client that this Relay interacts with
-	Clients      *ClientOperations // An abstraction over clients currently connected to this Relay
+	Name             string            // The name of the relay it is associated with
+	ConnectionID     string            // The connectionID of the client that this Relay interacts with
+	Clients          *ClientOperations // An abstraction over clients currently connected to this Relay
+	UnderlyingStruct interface{}
 
 	methods  []string
 	t        reflect.Type
