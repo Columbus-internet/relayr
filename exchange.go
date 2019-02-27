@@ -58,6 +58,7 @@ type Exchange struct {
 	mainURL              string
 	mainURLWithoutScheme string
 	mapLock              sync.Mutex
+	verbosity            int
 }
 
 type negotiation struct {
@@ -69,7 +70,7 @@ type negotiationResponse struct {
 }
 
 // NewExchange initializes and returns a new Exchange
-func NewExchange(mainURL string) *Exchange {
+func NewExchange(mainURL string, verbosity int) *Exchange {
 	e := &Exchange{}
 	e.groups = make(map[string][]*client)
 	e.transports = map[string]Transport{
@@ -79,6 +80,7 @@ func NewExchange(mainURL string) *Exchange {
 	e.mainURL = mainURL
 	e.mainURLWithoutScheme = strings.Replace(e.mainURL, "https://", "", -1)
 	e.mainURLWithoutScheme = strings.Replace(e.mainURLWithoutScheme, "http://", "", -1)
+	e.verbosity = verbosity
 
 	return e
 }
@@ -324,18 +326,24 @@ func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...inter
 	// e.mapLock.Lock()
 	// defer e.mapLock.Unlock()
 	if _, ok := e.groups[group]; ok {
-		// log.Println("group found")
-		// log.Printf("list of clients for group when calling %s:\n", group)
-		// for _, c := range e.groups[group] {
-		// 	log.Printf("ConnectionID: %s\n", c.ConnectionID)
-		// }
+		if e.verbosity > 0 {
+			log.Println("group found")
+			log.Printf("list of clients for group when calling %s:\n", group)
+			for _, c := range e.groups[group] {
+				log.Printf("ConnectionID: %s\n", c.ConnectionID)
+			}
+		}
 		for _, c := range e.groups[group] {
 			r := e.getRelayByName(relay.Name, c.ConnectionID)
-			//log.Printf("sending to %s", c.ConnectionID)
+			if e.verbosity > 0 {
+				log.Printf("sending to %s", c.ConnectionID)
+			}
 			c.transport.CallClientFunction(r, fn, args...)
 		}
 	} else {
-		//log.Printf("group '%s' not found. All groups: %v", group, e.groups)
+		if e.verbosity > 0 {
+			log.Printf("group '%s' not found. All groups: %v", group, e.groups)
+		}
 	}
 }
 
@@ -363,14 +371,18 @@ func (e *Exchange) getClientByConnectionID(cID string) *client {
 }
 
 func (e *Exchange) removeFromAllGroups(id string) {
-	//log.Printf("removing client %s from all groups\n", id)
+	if e.verbosity > 0 {
+		log.Printf("removing client %s from all groups\n", id)
+	}
 	for group := range e.groups {
 		e.removeFromGroupByID(group, id)
 	}
 }
 
 func (e *Exchange) removeFromGroupByID(g, id string) {
-	//log.Printf("removing client %s from '%s'\n", id, g)
+	if e.verbosity > 0 {
+		log.Printf("removing client %s from '%s'\n", id, g)
+	}
 	// e.mapLock.Lock()
 	// defer e.mapLock.Unlock()
 
@@ -383,9 +395,13 @@ func (e *Exchange) removeFromGroupByID(g, id string) {
 		if len(e.groups[g]) == 0 {
 			delete(e.groups, g)
 		}
-		//log.Println("client removed")
+		if e.verbosity > 0 {
+			log.Println("client removed")
+		}
 	} else {
-		// log.Printf("client %s not in the group '%s'", id, g)
+		if e.verbosity > 0 {
+			log.Printf("client %s not in the group '%s'", id, g)
+		}
 	}
 }
 
@@ -407,15 +423,19 @@ func (e *Exchange) addToGroup(group, connectionID string) {
 	// defer e.mapLock.Unlock()
 	if e.getClientIndexInGroup(group, connectionID) == -1 {
 		e.groups[group] = append(e.groups[group], e.getClientByConnectionID(connectionID))
-		//log.Printf("list of clients for group %s:\n", group)
-		// for _, c := range e.groups[group] {
-		// 	log.Printf("ConnectionID: %s\n", c.ConnectionID)
-		// }
+		if e.verbosity > 0 {
+			log.Printf("list of clients for group %s:\n", group)
+			for _, c := range e.groups[group] {
+				log.Printf("ConnectionID: %s\n", c.ConnectionID)
+			}
+		}
 	} else {
-		// log.Printf("client %s NOT added to '%s'\n", connectionID, group)
-		// log.Printf("list of clients for group %s:\n", group)
-		// for _, c := range e.groups[group] {
-		// 	log.Printf("ConnectionID: %s\n", c.ConnectionID)
-		// }
+		if e.verbosity > 0 {
+			log.Printf("client %s NOT added to '%s'\n", connectionID, group)
+			log.Printf("list of clients for group %s:\n", group)
+			for _, c := range e.groups[group] {
+				log.Printf("ConnectionID: %s\n", c.ConnectionID)
+			}
+		}
 	}
 }

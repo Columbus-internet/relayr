@@ -49,10 +49,14 @@ func (c *webSocketTransport) listen() {
 	for {
 		select {
 		case conn := <-c.connected:
-			log.Printf("connection added id: %s", conn.id)
+			if c.e.verbosity > 0 {
+				log.Printf("connection added id: %s", conn.id)
+			}
 			c.connections[conn.id] = conn
 		case conn := <-c.disconnected:
-			log.Printf("removing connection id: %s", conn.id)
+			if c.e.verbosity > 0 {
+				log.Printf("removing connection id: %s", conn.id)
+			}
 			if _, ok := c.connections[conn.id]; ok {
 				c.e.removeFromAllGroups(conn.id)
 				delete(c.connections, conn.id)
