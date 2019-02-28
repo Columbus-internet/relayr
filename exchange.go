@@ -264,10 +264,11 @@ func (e *Exchange) getRelayByName(name string, cID string) *Relay {
 	for _, r := range e.relays {
 		if r.Name == name {
 			relay := &Relay{
-				Name:         name,
-				ConnectionID: cID,
-				t:            r.t,
-				exchange:     e,
+				Name:             name,
+				ConnectionID:     cID,
+				t:                r.t,
+				exchange:         e,
+				UnderlyingStruct: r.UnderlyingStruct,
 			}
 
 			relay.Clients = &ClientOperations{
