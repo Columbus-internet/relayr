@@ -410,7 +410,7 @@ func (e *Exchange) getClientIndexInGroup(g, id string) int {
 	// e.mapLock.Lock()
 	// defer e.mapLock.Unlock()
 	for i, c := range e.groups[g] {
-		if c.ConnectionID == id {
+		if c != nil && c.ConnectionID == id {
 			return i
 		}
 	}
