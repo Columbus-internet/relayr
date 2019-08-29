@@ -330,11 +330,17 @@ func (e *Exchange) callGroupMethod(relay *Relay, group, fn string, args ...inter
 		if e.verbosity > 0 {
 			log.Println("group found")
 			log.Printf("list of clients for group when calling %s:\n", group)
-			for _, c := range e.groups[group] {
-				log.Printf("ConnectionID: %s\n", c.ConnectionID)
-			}
 		}
 		for _, c := range e.groups[group] {
+			if c == nil {
+				if e.verbosity > 0 {
+					log.Printf("c.ConnectionID will fail since c is nil, group key %s", group)
+				}
+				continue
+			}
+			if e.verbosity > 0 {
+				log.Printf("ConnectionID: %s\n", c.ConnectionID)
+			}
 			r := e.getRelayByName(relay.Name, c.ConnectionID)
 			if e.verbosity > 0 {
 				log.Printf("sending to %s", c.ConnectionID)
